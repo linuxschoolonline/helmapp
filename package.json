@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/linuxschoolonline/helmapp/issues"
   },
-  "homepage": "https://github.com/linuxschoolonline/helmapp#readme"
+  "homepage": "https://github.com/linuxschoolonline/helmapp#readme",
+  "dependencies": {
+    "axios": "^0.21.1"
+  }
 }
