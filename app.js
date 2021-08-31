@@ -1,8 +1,8 @@
 var axios = require("axios").default;
-var http = require('http'); // 1 - Import Node.js core module
+var http = require('http');
+var config = require('config')
 
 var server = http.createServer(function (req, res) {
-    // set response header
     res.writeHead(200, {
         'Content-Type': 'text/html'
     });
@@ -54,6 +54,6 @@ var server = http.createServer(function (req, res) {
     });
 });
 
-server.listen(80); //3 - listen for any incoming requests
+server.listen(config.network.port);
 
-console.log('Node.js web server at port 80 is running..')
+console.log('Myapp is running at port ' + config.network.port)
