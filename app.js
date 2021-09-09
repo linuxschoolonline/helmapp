@@ -1,6 +1,9 @@
 var axios = require("axios").default;
 var http = require('http');
 var config = require('config')
+const redis = require("redis");
+const redisPort = 6379
+const client = redis.createClient(redisPort);
 
 var server = http.createServer(function (req, res) {
     res.writeHead(200, {
@@ -17,8 +20,7 @@ var server = http.createServer(function (req, res) {
             'x-rapidapi-key': process.env.APIKEY
         }
     };
-    data = {}
-    axios.request(options).then(function (response) {
+    let callresponse = (res, payload) => {
         res.write(
             `<html>
                 <style>
@@ -37,20 +39,34 @@ var server = http.createServer(function (req, res) {
                 </style>
                 <body>
                     <div class="content">
-                        <h2>` + response.data.location.name + `, ` + response.data.location.country + `</h2>
-                        <span style="font-size: 20pt;">` + response.data.current.condition.text + `</span><img style="vertical-align: middle" src='//cdn.weatherapi.com/weather/64x64/day/116.png' />
+                        <h2>` + payload.location.name + `, ` + payload.location.country + `</h2>
+                        <span style="font-size: 20pt;">` + payload.current.condition.text + `</span><img style="vertical-align: middle" src='//cdn.weatherapi.com/weather/64x64/day/116.png' />
                         <h1>`
-                            + response.data.current.temp_c + `&deg;C
+            + payload.current.temp_c + `&deg;C
                         </h1>
                     </div>
                 </body>
             </html>`
         );
-        res.end();
-    }).catch(function (error) {
-        res.write("Invalid request");
-        res.end();
-        console.error(error);
+    }
+    const searchTerm = options.params.q;
+    client.get(searchTerm, async (err, data) => {
+        if (err) throw err;
+        if (data) {
+            payload = JSON.parse(data)
+            callresponse(res, payload)
+            res.end();
+        } else {
+            axios.request(options).then(function (response) {
+                payload = response.data
+                callresponse(res, payload)
+                res.end();
+            }).catch(function (error) {
+                res.write("Invalid request");
+                res.end();
+                console.error(error);
+            });
+        }
     });
 });
 
