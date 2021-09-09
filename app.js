@@ -61,6 +61,7 @@ var server = http.createServer(function (req, res) {
                 payload = response.data
                 callresponse(res, payload)
                 res.end();
+                client.setex(searchTerm, 600, JSON.stringify(payload));
             }).catch(function (error) {
                 res.write("Invalid request");
                 res.end();
