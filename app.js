@@ -2,8 +2,8 @@ var axios = require("axios").default;
 var http = require('http');
 var config = require('config')
 const redis = require("redis");
-const redisPort = 6379
-const client = redis.createClient(redisPort);
+const redisPort = config.redis.port
+const client = redis.createClient(redisPort,config.redis.server);
 
 var server = http.createServer(function (req, res) {
     res.writeHead(200, {
